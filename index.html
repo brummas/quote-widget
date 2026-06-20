@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote Widget Cloud Link</title>
+    <link href="https://fonts.googleapis.com/css2?family=Mystery+Quest&family=Flavors&family=Cabin+Sketch:wght@400;700&family=Griffy&family=Bonbon&family=Special+Elite&family=IM+Fell+DW+Pica+SC&family=Rubik+Glitch&family=Rubik+Burned&family=Jacquarda+Bastarda+9+Charted&family=Jacquarda+12+Charted&family=Jacquarda+Bastarda+9&family=Playfair+Display:ital@1&family=Dancing+Script:wght@600&family=Poppins:wght@300;400&family=Caveat:wght@500&family=Courier+Prime&family=Gaegu:wght@400;700&family=Sour+Gummy:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: transparent;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .widget-container {
+            background-color: #FFF0F5; 
+            border: 1px outset #b0b0b0; 
+            border-radius: 16px;
+            padding: 5px; 
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.03);
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: auto;
+        }
+
+        .icon-menu {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            z-index: 10;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.7;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .icon-btn svg {
+            fill: #FFB6C1; 
+            width: 33px;
+            height: 33px;
+        }
+
+        .icon-btn:hover { opacity: 1; transform: scale(1.1); }
+
+        .quote-display {
+            color: #4A3E3D;
+            font-size: 22px; 
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: normal;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            width: 100%;
+            padding: 10px 4px; 
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+        }
+
+        .settings-panel {
+            display: none; 
+            background-color: #FFE4E1;
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid #FFB6C1;
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            max-height: 85%;
+            overflow-y: auto;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 20;
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        .settings-panel input[type="text"] {
+            width: 100%;
+            border: 1px solid #FFB6C1;
+            border-radius: 6px;
+            padding: 6px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .settings-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .settings-panel select, .settings-panel input[type="color"] {
+            background-color: #fff;
+            border: 1px solid #FFB6C1;
+            border-radius: 6px;
+            padding: 5px;
+            font-size: 12px;
+            cursor: pointer;
+            outline: none;
+            flex-grow: 1;
+        }
+        
+        .color-group { display: flex; gap: 4px; align-items: center; }
+        .color-label { font-size: 10px; color: #5c4d4c; display: flex; flex-direction: column; align-items: center; }
+        .settings-panel input[type="color"] { padding: 2px; height: 28px; width: 40px; flex-grow: 0; }
+        .style-btn-group { display: flex; gap: 4px; }
+
+        .style-btn {
+            background-color: #fff;
+            border: 1px solid #FFB6C1;
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #4A3E3D;
+        }
+
+        .style-btn.active { background-color: #FFB6C1; color: #fff; }
+
+        .ok-btn {
+            background-color: #FFB6C1;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .ok-btn:hover { background-color: #FFA07A; }
+
+        #copy-input { position: absolute; left: -9999px; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="widget-container" id="widget-bg">
+        <div class="icon-menu">
+            <button class="icon-btn" onclick="togglePanel(event)" title="Configurações">
+                <svg viewBox="0 0 24 24" id="star-icon">
+                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="quote-display" id="text-output">Seu quote lindo e estético aqui.</div>
+
+        <div class="settings-panel" id="settings" onclick="event.stopPropagation()">
+            <input type="text" id="text-input" placeholder="Digite a nova frase..." oninput="updateText(this.value)">
+            
+            <div class="settings-row">
+                <select id="font-select" onchange="changeFont(this.value)">
+                    <option value="'Playfair Display', serif">Playfair Display</option>
+                    <option value="'Gaegu', cursive">Gaegu</option>
+                    <option value="'Sour Gummy', cursive">Sour Gummy</option>
+                    <option value="'Mystery Quest', cursive">Mystery Quest</option>
+                    <option value="'Flavors', cursive">Flavors</option>
+                    <option value="'Cabin Sketch', cursive">Cabin Sketch</option>
+                    <option value="'Griffy', cursive">Griffy</option>
+                    <option value="'Bonbon', cursive">Bonbon</option>
+                    <option value="'Special Elite', monospace">Special Elite</option>
+                    <option value="'IM Fell DW Pica SC', serif">IM Fell DW Pica SC</option>
+                    <option value="'Rubik Glitch', system-ui">Rubik Glitch</option>
+                    <option value="'Rubik Burned', system-ui">Rubik Burned</option>
+                    <option value="'Jacquarda Bastarda 9 Charted', serif">Jacquarda Bastarda 9 Charted</option>
+                    <option value="'Jacquarda 12 Charted', serif">Jacquarda 12 Charted</option>
+                    <option value="'Jacquarda Bastarda 9', serif">Jacquarda Bastarda 9</option>
+                    <option value="'Courier Prime', monospace">Courier Prime</option>
+                    <option value="'Dancing Script', cursive">Dancing Script</option>
+                    <option value="'Caveat', cursive">Caveat</option>
+                    <option value="'Poppins', sans-serif">Poppins</option>
+                </select>
+
+                <select id="size-select" onchange="changeSize(this.value)" style="max-width: 75px;">
+                    <option value="12px">12px</option>
+                    <option value="14px">14px</option>
+                    <option value="16px">16px</option>
+                    <option value="18px">18px</option>
+                    <option value="20px">20px</option>
+                    <option value="22px">22px</option>
+                    <option value="24px">24px</option>
+                    <option value="26px">26px</option>
+                    <option value="28px">28px</option>
+                    <option value="32px">32px</option>
+                    <option value="36px">36px</option>
+                    <option value="40px">40px</option>
+                    <option value="46px">46px</option>
+                    <option value="52px">52px</option>
+                    <option value="60px">60px</option>
+                    <option value="72px">72px</option>
+                </select>
+            </div>
+
+            <div class="settings-row">
+                <span style="font-size: 11px; color: #5c4d4c;">Tam. Estrela:</span>
+                <select id="star-size-select" onchange="changeStarSize(this.value)">
+                    <option value="18px">18px</option>
+                    <option value="24px">24px</option>
+                    <option value="28px">28px</option>
+                    <option value="33px">33px</option>
+                    <option value="40px">40px</option>
+                    <option value="48px">48px</option>
+                </select>
+            </div>
+
+            <div class="settings-row">
+                <div class="color-group">
+                    <label class="color-label">Texto<input type="color" id="color-input" value="#4A3E3D" onchange="changeColor(this.value)"></label>
+                </div>
+                <div class="color-group">
+                    <label class="color-label">Estrela<input type="color" id="star-color-input" value="#FFB6C1" onchange="changeStarColor(this.value)"></label>
+                </div>
+                <div class="color-group">
+                    <label class="color-label">Fundo<input type="color" id="bg-color-input" value="#FFF0F5" onchange="changeBgColor(this.value)"></label>
+                </div>
+                <div class="color-group">
+                    <label class="color-label">Borda<input type="color" id="border-color-input" value="#b0b0b0" onchange="changeBorderColor(this.value)"></label>
+                </div>
+            </div>
+
+            <div class="settings-row" style="margin-top: 2px;">
+                <div>
+                    <span style="font-size: 11px; color: #5c4d4c; margin-right: 4px;">Estilo:</span>
+                    <div class="style-btn-group" style="display: inline-flex;">
+                        <button class="style-btn" id="btn-bold" onclick="toggleBold()">B</button>
+                        <button class="style-btn" id="btn-italic" onclick="toggleItalic()">I</button>
+                        <button class="style-btn" id="btn-normal" onclick="setNormal()">Normal</button>
+                    </div>
+                </div>
+                <button class="ok-btn" id="ok-btn-text" onclick="closePanel(event)">OK</button>
+            </div>
+        </div>
+    </div>
+    
+    <input type="text" id="copy-input">
+
+    <script>
+        const panel = document.getElementById('settings');
+        const textInput = document.getElementById('text-input');
+        const textOutput = document.getElementById('text-output');
+        const widgetBg = document.getElementById('widget-bg');
+        const starIcon = document.getElementById('star-icon');
+        
+        const fontSelect = document.getElementById('font-select');
+        const sizeSelect = document.getElementById('size-select');
+        const starSizeSelect = document.getElementById('star-size-select');
+        const colorInput = document.getElementById('color-input');
+        const starColorInput = document.getElementById('star-color-input');
+        const bgColorInput = document.getElementById('bg-color-input');
+        const borderColorInput = document.getElementById('border-color-input');
+        const okBtnText = document.getElementById('ok-btn-text');
+
+        let isBold = false;
+        let isItalic = true; 
+
+        function loadUrlSettings() {
+            const params = new URLSearchParams(window.location.search);
+            
+            if (params.has('txt')) textOutput.innerText = params.get('txt');
+            if (params.has('fnt')) textOutput.style.fontFamily = params.get('fnt');
+            if (params.has('sz')) textOutput.style.fontSize = params.get('sz');
+            if (params.has('col')) textOutput.style.color = params.get('col');
+            if (params.has('bg')) widgetBg.style.backgroundColor = params.get('bg');
+            if (params.has('brd')) widgetBg.style.borderColor = params.get('brd');
+            
+            if (params.has('scol')) starIcon.style.fill = params.get('scol');
+            if (params.has('ssz')) {
+                starIcon.style.width = params.get('ssz');
+                starIcon.style.height = params.get('ssz');
+            }
+            
+            if (params.has('bld')) {
+                isBold = params.get('bld') === 'true';
+                textOutput.style.fontWeight = isBold ? 'bold' : 'normal';
+            }
+            if (params.has('itl')) {
+                isItalic = params.get('itl') === 'true';
+                textOutput.style.fontStyle = isItalic ? 'italic' : 'normal';
+            }
+
+            textInput.value = textOutput.innerText;
+            fontSelect.value = textOutput.style.fontFamily || "'Playfair Display', serif";
+            sizeSelect.value = textOutput.style.fontSize || "22px";
+            starSizeSelect.value = starIcon.style.width || "33px";
+            colorInput.value = rgbToHex(textOutput.style.color) || "#4A3E3D";
+            starColorInput.value = rgbToHex(starIcon.style.fill) || "#FFB6C1";
+            bgColorInput.value = rgbToHex(widgetBg.style.backgroundColor) || "#FFF0F5";
+            borderColorInput.value = rgbToHex(widgetBg.style.borderColor) || "#b0b0b0";
+            
+            document.getElementById('btn-bold').classList.toggle('active', isBold);
+            document.getElementById('btn-italic').classList.toggle('active', isItalic);
+            if (!isBold && !isItalic) document.getElementById('btn-normal').classList.add('active');
+        }
+
+        function generateAndCopyLink() {
+            const baseUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
+            const params = new URLSearchParams();
+            
+            params.set('txt', textInput.value);
+            params.set('fnt', fontSelect.value);
+            params.set('sz', sizeSelect.value);
+            params.set('col', colorInput.value);
+            params.set('bg', bgColorInput.value);
+            params.set('brd', borderColorInput.value);
+            params.set('bld', isBold);
+            params.set('itl', isItalic);
+            
+            params.set('scol', starColorInput.value);
+            params.set('ssz', starSizeSelect.value);
+
+            const finalUrl = baseUrl + '?' + params.toString();
+            
+            const copyInput = document.getElementById('copy-input');
+            copyInput.value = finalUrl;
+            copyInput.select();
+            copyInput.setSelectionRange(0, 99999);
+            document.execCommand('copy');
+
+            okBtnText.innerText = "Copiado! 👍";
+            setTimeout(() => {
+                okBtnText.innerText = "OK";
+                panel.style.display = 'none';
+            }, 1000);
+        }
+
+        function togglePanel(event) {
+            event.stopPropagation();
+            if (panel.style.display === 'flex') {
+                panel.style.display = 'none';
+            } else {
+                panel.style.display = 'flex';
+                textInput.focus();
+            }
+        }
+
+        function closePanel(event) {
+            if (event) event.stopPropagation();
+            generateAndCopyLink();
+        }
+
+        function updateText(val) { textOutput.innerText = val; }
+        function changeFont(val) { textOutput.style.fontFamily = val; }
+        function changeSize(val) { textOutput.style.fontSize = val; }
+        function changeColor(val) { textOutput.style.color = val; }
+        function changeBgColor(val) { widgetBg.style.backgroundColor = val; }
+        function changeBorderColor(val) { widgetBg.style.borderColor = val; }
+        
+        function changeStarColor(val) { starIcon.style.fill = val; }
+        function changeStarSize(val) { 
+            starIcon.style.width = val; 
+            starIcon.style.height = val; 
+        }
+
+        function toggleBold() {
+            isBold = !isBold;
+            textOutput.style.fontWeight = isBold ? 'bold' : 'normal';
+            document.getElementById('btn-bold').classList.toggle('active', isBold);
+            if(isBold) document.getElementById('btn-normal').classList.remove('active');
+        }
+
+        function toggleItalic() {
+            isItalic = !isItalic;
+            textOutput.style.fontStyle = isItalic ? 'italic' : 'normal';
+            document.getElementById('btn-italic').classList.toggle('active', isItalic);
+            if(isItalic) document.getElementById('btn-normal').classList.remove('active');
+        }
+
+        function setNormal() {
+            isBold = false; isItalic = false;
+            textOutput.style.fontWeight = 'normal';
+            textOutput.style.fontStyle = 'normal';
+            document.getElementById('btn-bold').classList.remove('active');
+            document.getElementById('btn-italic').classList.remove('active');
+            document.getElementById('btn-normal').classList.add('active');
+        }
+
+        function rgbToHex(rgb) {
+            if (!rgb || rgb.indexOf('rgb') === -1) return rgb;
+            const rgbValues = rgb.match(/\d+/g);
+            const r = parseInt(rgbValues[0]).toString(16).padStart(2, '0');
+            const g = parseInt(rgbValues[1]).toString(16).padStart(2, '0');
+            const b = parseInt(rgbValues[2]).toString(16).padStart(2, '0');
+            return `#${r}${g}${b}`;
+        }
+
+        document.addEventListener('click', function(event) {
+            if (panel.style.display === 'flex') {
+                panel.style.display = 'none';
+            }
+        });
+
+        window.onload = loadUrlSettings;
+    </script>
+</body>
+</html>
