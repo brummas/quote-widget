@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quote Widget Advanced</title>
+    <title>Quote Widget Super Advanced</title>
+    <!-- Importando TODAS as fontes do Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Mystery+Quest&family=Flavors&family=Cabin+Sketch:wght@400;700&family=Griffy&family=Bonbon&family=Special+Elite&family=IM+Fell+DW+Pica+SC&family=Rubik+Glitch&family=Rubik+Burned&family=Jacquarda+Bastarda+9+Charted&family=Jacquarda+12+Charted&family=Jacquarda+Bastarda+9&family=Playfair+Display:ital@1&family=Dancing+Script:wght@600&family=Poppins:wght@300;400&family=Caveat:wght@500&family=Courier+Prime&display=swap" rel="stylesheet">
     
     <style>
@@ -25,10 +26,10 @@
 
         /* Container 100% flexível para se ajustar ao bloco do Notion */
         .widget-container {
-            background-color: #FFF0F5; /* Rosa Pastel */
+            background-color: #FFF0F5; /* Rosa Pastel Inicial */
             border: 1px outset #b0b0b0; /* Borda Outset de 1px cinza (efeito sombra) */
             border-radius: 16px;
-            padding: 15px; 
+            padding: 20px 15px 15px 15px; 
             width: 100%;
             height: 100%;
             max-width: 100%;
@@ -43,11 +44,11 @@
             overflow: auto;
         }
 
-        /* Ícone no topo direito */
+        /* Ícone de Estrela no TOPO ESQUERDO e com 33px */
         .icon-menu {
             position: absolute;
             top: 8px;
-            right: 8px;
+            left: 8px;
             z-index: 10;
         }
 
@@ -55,7 +56,7 @@
             background: none;
             border: none;
             cursor: pointer;
-            padding: 4px;
+            padding: 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -65,19 +66,19 @@
 
         .icon-btn svg {
             fill: #FFB6C1; /* Estrela Rosa Pastel */
-            width: 18px;
-            height: 18px;
+            width: 33px;
+            height: 33px;
         }
 
         .icon-btn:hover {
             opacity: 1;
-            transform: scale(1.15);
+            transform: scale(1.1);
         }
 
-        /* Área de exibição do texto (Flexível e Responsiva) */
+        /* Área de exibição do texto */
         .quote-display {
             color: #4A3E3D;
-            font-size: 22px; /* Tamanho inicial padronizado */
+            font-size: 22px; 
             font-family: 'Playfair Display', serif;
             font-style: italic;
             font-weight: normal;
@@ -94,7 +95,7 @@
 
         /* Painel de Configurações Completo */
         .settings-panel {
-            display: none; /* Escondido por padrão */
+            display: none; 
             background-color: #FFE4E1;
             border-radius: 12px;
             padding: 12px;
@@ -140,10 +141,24 @@
             flex-grow: 1;
         }
         
+        .color-group {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .color-label {
+            font-size: 10px;
+            color: #5c4d4c;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
         .settings-panel input[type="color"] {
             padding: 2px;
             height: 28px;
-            max-width: 50px;
+            width: 40px;
             flex-grow: 0;
         }
 
@@ -168,6 +183,23 @@
             color: #fff;
         }
 
+        /* Botão OK de fechar/salvar */
+        .ok-btn {
+            background-color: #FFB6C1;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .ok-btn:hover {
+            background-color: #FFA07A;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-5px); }
             to { opacity: 1; transform: translateY(0); }
@@ -176,7 +208,8 @@
 </head>
 <body>
 
-    <div class="widget-container">
+    <div class="widget-container" id="widget-bg">
+        <!-- Ícone de Estrela Rosa Pastel (Topo Esquerdo - 33px) -->
         <div class="icon-menu">
             <button class="icon-btn" onclick="togglePanel(event)" title="Configurações">
                 <svg viewBox="0 0 24 24">
@@ -185,12 +218,15 @@
             </button>
         </div>
 
-        <div class="quote-display" id="text-output">"Seu quote lindo e estético aqui."</div>
+        <!-- O Texto Visível (Sem aspas fixas por padrão) -->
+        <div class="quote-display" id="text-output">Seu quote lindo e estético aqui.</div>
 
+        <!-- Painel Unificado de Configurações -->
         <div class="settings-panel" id="settings" onclick="event.stopPropagation()">
             <input type="text" id="text-input" placeholder="Digite a nova frase..." oninput="updateText(this.value)">
             
             <div class="settings-row">
+                <!-- Seletores das fontes -->
                 <select id="font-select" onchange="changeFont(this.value)">
                     <option value="'Playfair Display', serif">Playfair Display</option>
                     <option value="'Mystery Quest', cursive">Mystery Quest</option>
@@ -211,28 +247,52 @@
                     <option value="'Poppins', sans-serif">Poppins</option>
                 </select>
 
-                <select id="size-select" onchange="changeSize(this.value)" style="max-width: 80px;">
+                <!-- Seletor com opções de Tamanho -->
+                <select id="size-select" onchange="changeSize(this.value)" style="max-width: 75px;">
+                    <option value="12px">12px</option>
                     <option value="14px">14px</option>
                     <option value="16px">16px</option>
                     <option value="18px">18px</option>
                     <option value="20px">20px</option>
                     <option value="22px" selected>22px</option>
+                    <option value="24px">24px</option>
                     <option value="26px">26px</option>
+                    <option value="28px">28px</option>
                     <option value="32px">32px</option>
-                    <option value="38px">38px</option>
+                    <option value="36px">36px</option>
+                    <option value="40px">40px</option>
                     <option value="46px">46px</option>
+                    <option value="52px">52px</option>
+                    <option value="60px">60px</option>
+                    <option value="72px">72px</option>
                 </select>
-                
-                <input type="color" id="color-input" value="#4A3E3D" onchange="changeColor(this.value)" title="Cor da Fonte">
             </div>
 
-            <div class="settings-row" style="margin-top: 2px;">
-                <span style="font-size: 11px; color: #5c4d4c;">Estilo do Texto:</span>
-                <div class="style-btn-group">
-                    <button class="style-btn" id="btn-bold" onclick="toggleBold()">B</button>
-                    <button class="style-btn" id="btn-italic" onclick="toggleItalic()">I</button>
-                    <button class="style-btn" id="btn-normal" onclick="setNormal()">Normal</button>
+            <!-- Controles de Cores (Texto, Fundo e Borda) -->
+            <div class="settings-row">
+                <div class="color-group">
+                    <label class="color-label">Texto<input type="color" id="color-input" value="#4A3E3D" onchange="changeColor(this.value)"></label>
                 </div>
+                <div class="color-group">
+                    <label class="color-label">Fundo<input type="color" id="bg-color-input" value="#FFF0F5" onchange="changeBgColor(this.value)"></label>
+                </div>
+                <div class="color-group">
+                    <label class="color-label">Borda<input type="color" id="border-color-input" value="#b0b0b0" onchange="changeBorderColor(this.value)"></label>
+                </div>
+            </div>
+
+            <!-- Botões para Negrito, Itálico e o Botão OK -->
+            <div class="settings-row" style="margin-top: 2px;">
+                <div>
+                    <span style="font-size: 11px; color: #5c4d4c; margin-right: 4px;">Estilo:</span>
+                    <div class="style-btn-group" style="display: inline-flex;">
+                        <button class="style-btn" id="btn-bold" onclick="toggleBold()">B</button>
+                        <button class="style-btn" id="btn-italic" onclick="toggleItalic()">I</button>
+                        <button class="style-btn" id="btn-normal" onclick="setNormal()">Normal</button>
+                    </div>
+                </div>
+                <!-- Botão de Salvar/Fechar -->
+                <button class="ok-btn" onclick="closePanel(event)">OK</button>
             </div>
         </div>
     </div>
@@ -241,11 +301,13 @@
         const panel = document.getElementById('settings');
         const textInput = document.getElementById('text-input');
         const textOutput = document.getElementById('text-output');
+        const widgetBg = document.getElementById('widget-bg');
         
         let isBold = false;
         let isItalic = true; 
 
-        textInput.value = textOutput.innerText.replace(/"/g, "");
+        // Carrega o texto atual sem qualquer manipulação de aspas
+        textInput.value = textOutput.innerText;
 
         function togglePanel(event) {
             event.stopPropagation();
@@ -257,8 +319,13 @@
             }
         }
 
+        function closePanel(event) {
+            if (event) event.stopPropagation();
+            panel.style.display = 'none';
+        }
+
         function updateText(val) {
-            textOutput.innerText = val ? `"${val}"` : "";
+            textOutput.innerText = val;
         }
 
         function changeFont(fontName) {
@@ -271,6 +338,14 @@
 
         function changeColor(color) {
             textOutput.style.color = color;
+        }
+
+        function changeBgColor(color) {
+            widgetBg.style.backgroundColor = color;
+        }
+
+        function changeBorderColor(color) {
+            widgetBg.style.borderColor = color;
         }
 
         function toggleBold() {
