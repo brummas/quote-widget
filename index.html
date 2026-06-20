@@ -69,7 +69,7 @@
 
         .icon-btn svg {
             fill: #FFB6C1; 
-            width: 14px; /* Estrela bem menor para não travar a altura mínima */
+            width: 14px; 
             height: 14px;
         }
 
@@ -77,7 +77,7 @@
 
         .quote-display {
             color: #4A3E3D;
-            font-size: 14px; 
+            font-size: 22px; 
             font-family: 'Playfair Display', serif;
             font-style: italic;
             font-weight: normal;
@@ -87,7 +87,7 @@
             padding: 2px 4px; 
             margin: 0;
             text-align: center;
-            overflow: hidden; /* Remove barras de rolagem que forçam altura */
+            overflow: hidden; 
             flex-grow: 1;
             display: flex;
             align-items: center;
@@ -213,7 +213,6 @@
                 </select>
 
                 <select id="size-select" onchange="changeSize(this.value)" style="max-width: 75px;">
-                    <option value="10px">10px</option>
                     <option value="12px">12px</option>
                     <option value="14px">14px</option>
                     <option value="16px">16px</option>
@@ -221,6 +220,15 @@
                     <option value="20px">20px</option>
                     <option value="22px">22px</option>
                     <option value="24px">24px</option>
+                    <option value="26px">26px</option>
+                    <option value="28px">28px</option>
+                    <option value="32px">32px</option>
+                    <option value="36px">36px</option>
+                    <option value="40px">40px</option>
+                    <option value="46px">46px</option>
+                    <option value="52px">52px</option>
+                    <option value="60px">60px</option>
+                    <option value="72px">72px</option>
                 </select>
             </div>
 
@@ -240,6 +248,10 @@
                     <option value="14px">14px</option>
                     <option value="18px">18px</option>
                     <option value="24px">24px</option>
+                    <option value="28px">28px</option>
+                    <option value="33px">33px</option>
+                    <option value="40px">40px</option>
+                    <option value="48px">48px</option>
                 </select>
             </div>
 
@@ -329,9 +341,9 @@
 
             textInput.value = textOutput.innerText;
             fontSelect.value = textOutput.style.fontFamily || "'Playfair Display', serif";
-            sizeSelect.value = textOutput.style.fontSize || "14px";
+            sizeSelect.value = textOutput.style.fontSize || "22px";
             alignSelect.value = params.get('alg') || "center";
-            starSizeSelect.value = starIcon.style.width || "14px";
+            starSizeSelect.value = starIcon.style.width || "33px";
             colorInput.value = rgbToHex(textOutput.style.color) || "#4A3E3D";
             starColorInput.value = rgbToHex(starIcon.style.fill) || "#FFB6C1";
             bgColorInput.value = rgbToHex(widgetBg.style.backgroundColor) || "#FFF0F5";
