@@ -21,31 +21,33 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            overflow: hidden;
         }
 
         .widget-container {
             background-color: #FFF0F5; 
             border: 1px outset #b0b0b0; 
             border-radius: 16px;
-            padding: 5px; 
+            padding: 2px; 
             width: 100%;
             height: 100%;
             max-width: 100%;
             max-height: 100%;
+            min-width: 0 !important;
+            min-height: 0 !important;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.03);
-            text-align: center;
             position: relative;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
-            overflow: auto;
+            align-items: stretch;
+            overflow: hidden;
         }
 
         .icon-menu {
             position: absolute;
-            top: 8px;
-            left: 8px;
+            top: 4px;
+            left: 4px;
             z-index: 10;
         }
 
@@ -57,14 +59,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            opacity: 0.7;
+            opacity: 0.4;
             transition: opacity 0.2s, transform 0.2s;
         }
 
         .icon-btn svg {
             fill: #FFB6C1; 
-            width: 33px;
-            height: 33px;
+            width: 24px;
+            height: 24px;
         }
 
         .icon-btn:hover { opacity: 1; transform: scale(1.1); }
@@ -76,14 +78,15 @@
             font-style: italic;
             font-weight: normal;
             word-wrap: break-word;
+            aria-wrap: break-word;
             white-space: pre-wrap;
             width: 100%;
-            padding: 10px 4px; 
+            padding: 20px 8px 8px 8px; 
             margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            text-align: center;
+            overflow: auto;
             flex-grow: 1;
+            align-content: center;
         }
 
         .settings-panel {
@@ -93,10 +96,10 @@
             padding: 12px;
             border: 1px solid #FFB6C1;
             position: absolute;
-            bottom: 10px;
-            left: 10px;
-            right: 10px;
-            max-height: 85%;
+            bottom: 5px;
+            left: 5px;
+            right: 5px;
+            max-height: 95%;
             overflow-y: auto;
             flex-direction: column;
             gap: 8px;
@@ -233,8 +236,18 @@
             </div>
 
             <div class="settings-row">
+                <span style="font-size: 11px; color: #5c4d4c;">Alinhamento:</span>
+                <select id="align-select" onchange="changeAlignment(this.value)">
+                    <option value="left">Esquerda</option>
+                    <option value="center" selected>Centralizado</option>
+                    <option value="right">Direita</option>
+                </select>
+            </div>
+
+            <div class="settings-row">
                 <span style="font-size: 11px; color: #5c4d4c;">Tam. Estrela:</span>
                 <select id="star-size-select" onchange="changeStarSize(this.value)">
+                    <option value="14px">14px</option>
                     <option value="18px">18px</option>
                     <option value="24px">24px</option>
                     <option value="28px">28px</option>
@@ -284,6 +297,7 @@
         
         const fontSelect = document.getElementById('font-select');
         const sizeSelect = document.getElementById('size-select');
+        const alignSelect = document.getElementById('align-select');
         const starSizeSelect = document.getElementById('star-size-select');
         const colorInput = document.getElementById('color-input');
         const starColorInput = document.getElementById('star-color-input');
@@ -303,6 +317,7 @@
             if (params.has('col')) textOutput.style.color = params.get('col');
             if (params.has('bg')) widgetBg.style.backgroundColor = params.get('bg');
             if (params.has('brd')) widgetBg.style.borderColor = params.get('brd');
+            if (params.has('alg')) textOutput.style.textAlign = params.get('alg');
             
             if (params.has('scol')) starIcon.style.fill = params.get('scol');
             if (params.has('ssz')) {
@@ -322,6 +337,7 @@
             textInput.value = textOutput.innerText;
             fontSelect.value = textOutput.style.fontFamily || "'Playfair Display', serif";
             sizeSelect.value = textOutput.style.fontSize || "22px";
+            alignSelect.value = textOutput.style.textAlign || "center";
             starSizeSelect.value = starIcon.style.width || "33px";
             colorInput.value = rgbToHex(textOutput.style.color) || "#4A3E3D";
             starColorInput.value = rgbToHex(starIcon.style.fill) || "#FFB6C1";
@@ -345,6 +361,7 @@
             params.set('brd', borderColorInput.value);
             params.set('bld', isBold);
             params.set('itl', isItalic);
+            params.set('alg', alignSelect.value);
             
             params.set('scol', starColorInput.value);
             params.set('ssz', starSizeSelect.value);
@@ -385,6 +402,7 @@
         function changeColor(val) { textOutput.style.color = val; }
         function changeBgColor(val) { widgetBg.style.backgroundColor = val; }
         function changeBorderColor(val) { widgetBg.style.borderColor = val; }
+        function changeAlignment(val) { textOutput.style.textAlign = val; }
         
         function changeStarColor(val) { starIcon.style.fill = val; }
         function changeStarSize(val) { 
