@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote Widget Cloud Link</title>
+    <link href="https://fonts.googleapis.com/css2?family=Mystery+Quest&family=Flavors&family=Cabin+Sketch:wght@400;700&family=Griffy&family=Bonbon&family=Special+Elite&family=IM+Fell+DW+Pica+SC&family=Rubik+Glitch&family=Rubik+Burned&family=Jacquarda+Bastarda+9+Charted&family=Jacquarda+12+Charted&family=Jacquarda+Bastarda+9&family=Playfair+Display:ital@1&family=Dancing+Script:wght@600&family=Poppins:wght@300;400&family=Caveat:wght@500&family=Courier+Prime&family=Gaegu:wght@400;700&family=Sour+Gummy:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            background-color: transparent;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 0 !important;
+            min-width: 0 !important;
+            overflow: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .widget-container {
+            background-color: #FFF0F5;
+            border: 1px outset #b0b0b0;
+            border-radius: 6px;
+            padding: 0;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100% !important;
+            height: 100% !important;
+            min-width: 0 !important;
+            min-height: 0 !important;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.03);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: stretch;
+            overflow: hidden;
+            container-type: inline-size;
+            container-name: quote-widget;
+        }
+
+        .icon-menu {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            z-index: 10;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.2;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .icon-btn svg {
+            fill: #FFB6C1;
+            width: clamp(10px, 4cqw, 16px);
+            height: clamp(10px, 4cqw, 16px);
+        }
+
+        .icon-btn:hover {
+            opacity: 1;
+            transform: rotate(25deg);
+        }
+
+        /* Wrapper handles vertical centering; the inner span carries the
+           real text-align (including justify), which needs a block-level
+           box to work correctly across multiple wrapped lines. */
+        .quote-display {
+            width: 100%;
+            height: 100%;
+            padding: clamp(4px, 3cqw, 16px);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+
+        #text-output {
+            display: block;
+            width: 100%;
+            color: #4A3E3D;
+            font-size: clamp(10px, 8cqw, 90px);
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-weight: normal;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+            text-align: center;
+            line-height: 1.25;
+            max-height: 100%;
+            overflow: hidden;
+        }
+
+        #text-output.align-justify {
+            text-align: justify;
+            text-align-last: center;
+        }
+
+        .settings-panel {
+            display: none;
+            background-color: #FFE4E1;
+            border-radius: 8px;
+            padding: 8px;
+            border: 1px solid #FFB6C1;
+            position: fixed;
+            top: 2px;
+            bottom: 2px;
+            left: 2px;
+            right: 2px;
+            max-height: calc(100vh - 4px);
+            overflow-y: auto;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 20;
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .settings-panel input[type="text"] {
+            width: 100%;
+            border: 1px solid #FFB6C1;
+            border-radius: 6px;
+            padding: 6px;
+            font-size: 12px;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+            resize: vertical;
+        }
+
+        .settings-row {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .settings-label {
+            font-size: 11px;
+            color: #5c4d4c;
+            white-space: nowrap;
+        }
+
+        .settings-panel select, .settings-panel input[type="color"] {
+            background-color: #fff;
+            border: 1px solid #FFB6C1;
+            border-radius: 6px;
+            padding: 4px;
+            font-size: 11px;
+            outline: none;
+            flex-grow: 1;
+        }
+
+        .settings-panel select:focus,
+        .settings-panel input:focus {
+            outline: 2px solid #FFB6C1;
+            outline-offset: 1px;
+        }
+
+        .color-group { display: flex; gap: 2px; align-items: center; }
+        .color-label { font-size: 9px; color: #5c4d4c; display: flex; flex-direction: column; align-items: center; }
+        .settings-panel input[type="color"] { padding: 1px; height: 24px; width: 35px; flex-grow: 0; }
+
+        .align-btn-group, .style-btn-group { display: flex; gap: 2px; flex-wrap: wrap; }
+
+        .style-btn {
+            background-color: #fff;
+            border: 1px solid #FFB6C1;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #4A3E3D;
+            transition: background-color 0.15s, color 0.15s;
+        }
+
+        .style-btn:hover { background-color: #FFE4E1; }
+        .style-btn.active { background-color: #FFB6C1; color: #fff; }
+
+        .ok-btn {
+            background-color: #FFB6C1;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.15s;
+        }
+
+        .ok-btn:hover { background-color: #FF9EB5; }
+
+        /* When the widget itself is very narrow, stack settings rows so
+           nothing gets clipped or overlaps. */
+        @container quote-widget (max-width: 220px) {
+            .settings-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .settings-panel select, .settings-panel input[type="color"] {
+                width: 100%;
+            }
+        }
+
+        #copy-input { position: absolute; left: -9999px; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .icon-btn, .style-btn, .ok-btn { transition: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="widget-container" id="widget-bg">
+        <div class="icon-menu">
+            <button class="icon-btn" onclick="togglePanel(event)" title="Configurações" aria-label="Configurações">
+                <svg viewBox="0 0 24 24" id="star-icon">
+                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="quote-display">
+            <span id="text-output">Seu quote lindo e estético aqui.</span>
+        </div>
+
+        <div class="settings-panel" id="settings" onclick="event.stopPropagation()">
+            <textarea id="text-input" rows="2" placeholder="Digite a nova frase..." oninput="updateText(this.value)" style="width:100%; border:1px solid #FFB6C1; border-radius:6px; padding:6px; font-size:12px; outline:none; font-family:'Poppins', sans-serif;"></textarea>
+
+            <div class="settings-row">
+                <select id="font-select" onchange="changeFont(this.value)">
+                    <option value="'Playfair Display', serif">Playfair Display</option>
+                    <option value="'Gaegu', cursive">Gaegu</option>
+                    <option value="'Sour Gummy', cursive">Sour Gummy</option>
+                    <option value="'Mystery Quest', cursive">Mystery Quest</option>
+                    <option value="'Flavors', cursive">Flavors</option>
+                    <option value="'Cabin Sketch', cursive">Cabin Sketch</option>
+                    <option value="'Griffy', cursive">Griffy</option>
+                    <option value="'Bonbon', cursive">Bonbon</option>
+                    <option value="'Special Elite', monospace">Special Elite</option>
+                    <option value="'IM Fell DW Pica SC', serif">IM Fell DW Pica SC</option>
+                    <option value="'Rubik Glitch', system-ui">Rubik Glitch</option>
+                    <option value="'Rubik Burned', system-ui">Rubik Burned</option>
+                    <option value="'Jacquarda Bastarda 9 Charted', serif">Jacquarda Bastarda 9 Charted</option>
+                    <option value="'Jacquarda 12 Charted', serif">Jacquarda 12 Charted</option>
+                    <option value="'Jacquarda Bastarda 9', serif">Jacquarda Bastarda 9</option>
+                    <option value="'Courier Prime', monospace">Courier Prime</option>
+                    <option value="'Dancing Script', cursive">Dancing Script</option>
+                    <option value="'Caveat', cursive">Caveat</option>
+                    <option value="'Poppins', sans-serif">Poppins</option>
+                </select>
+
+                <select id="size-select" onchange="changeSize(this.value)" style="max-width: 110px;">
+                    <option value="auto" selected>Automático</option>
+                    <option value="10px">10px</option>
+                    <option value="12px">12px</option>
+                    <option value="14px">14px</option>
+                    <option value="16px">16px</option>
+                    <option value="18px">18px</option>
+                    <option value="20px">20px</option>
+                    <option value="22px">22px</option>
+                    <option value="24px">24px</option>
+                    <option value="26px">26px</option>
+                    <option value="28px">28px</option>
+                    <option value="30px">30px</option>
+                    <option value="32px">32px</option>
+                    <option value="36px">36px</option>
+                    <option value="40px">40px</option>
+                    <option value="44px">44px</option>
+                    <option value="48px">48px</option>
+                    <option value="54px">54px</option>
+                    <option value="60px">60px</option>
+                    <option value="68px">68px</option>
+                    <option value="76px">76px</option>
+                    <option value="84px">84px</option>
+                    <option value="96px">96px</option>
+                </select>
+            </div>
+
+            <div class="settings-row">
+                <span class="settings-label">Alinhamento:</span>
+                <div class="align-btn-group">
+                    <button class="style-btn" id="align-left" onclick="changeAlignment('left')" title="Esquerda" aria-label="Alinhar à esquerda">⟸</button>
+                    <button class="style-btn active" id="align-center" onclick="changeAlignment('center')" title="Centralizado" aria-label="Centralizar">≡</button>
+                    <button class="style-btn" id="align-right" onclick="changeAlignment('right')" title="Direita" aria-label="Alinhar à direita">⟹</button>
+                    <button class="style-btn" id="align-justify" onclick="changeAlignment('justify')" title="Justificado" aria-label="Justificar">☰</button>
+                </div>
+            </div>
+
+            <div class="settings-row">
+                <span class="settings-label">Tam. Estrela:</span>
+                <select id="star-size-select" onchange="changeStarSize(this.value)">
+                    <option value="10px">10px</option>
+                    <option value="14px">14px</option>
+                    <option value="18px">18px</option>
+                    <option value="24px">24px</option>
+                    <option value="28px">28px</option>
+                    <option value="33px">33px</option>
+                    <option value="40px">40px</option>
+                    <option value="48px">48px</option>
+                    <option value="56px">56px</option>
+                    <option value="64px">64px</option>
+                </select>
+            </div>
+
+            <div class="settings-row">
+                <div class="color-group">
+                    <label class="color-label">Texto<input type="color" id="color-input" value="#4A3E3D" onchange="changeColor(this.value)"></label>
+                </div>
+                <div class="color-group">
+                    <label class="color-label">Estrela<input type="color" id="star-color-input" value="#FFB6C1" onchange="changeStarColor(this.value)"></label>
+                </div>
+                <div class="color-group">
+                    <label class="color-label">Fundo<input type="color" id="bg-color-input" value="#FFF0F5" onchange="changeBgColor(this.value)"></label>
+                </div>
+                <div class="color-group">
+                    <label class="color-label">Borda<input type="color" id="border-color-input" value="#b0b0b0" onchange="changeBorderColor(this.value)"></label>
+                </div>
+            </div>
+
+            <div class="settings-row" style="margin-top: 2px;">
+                <div>
+                    <span class="settings-label" style="margin-right: 4px;">Estilo:</span>
+                    <div class="style-btn-group" style="display: inline-flex;">
+                        <button class="style-btn" id="btn-bold" onclick="toggleBold()">B</button>
+                        <button class="style-btn" id="btn-italic" onclick="toggleItalic()">I</button>
+                        <button class="style-btn" id="btn-normal" onclick="setNormal()">Normal</button>
+                    </div>
+                </div>
+                <button class="ok-btn" id="ok-btn-text" onclick="closePanel(event)">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="text" id="copy-input">
+
+    <script>
+        const panel = document.getElementById('settings');
+        const textInput = document.getElementById('text-input');
+        const textOutput = document.getElementById('text-output');
+        const widgetBg = document.getElementById('widget-bg');
+        const starIcon = document.getElementById('star-icon');
+
+        const fontSelect = document.getElementById('font-select');
+        const sizeSelect = document.getElementById('size-select');
+        const starSizeSelect = document.getElementById('star-size-select');
+        const colorInput = document.getElementById('color-input');
+        const starColorInput = document.getElementById('star-color-input');
+        const bgColorInput = document.getElementById('bg-color-input');
+        const borderColorInput = document.getElementById('border-color-input');
+        const okBtnText = document.getElementById('ok-btn-text');
+
+        let isBold = false;
+        let isItalic = true;
+        let currentAlign = 'center';
+
+        function loadUrlSettings() {
+            const params = new URLSearchParams(window.location.search);
+
+            if (params.has('txt')) textOutput.innerText = params.get('txt');
+            if (params.has('fnt')) textOutput.style.fontFamily = params.get('fnt');
+            if (params.has('sz')) applySize(params.get('sz'));
+            if (params.has('col')) textOutput.style.color = params.get('col');
+            if (params.has('bg')) widgetBg.style.backgroundColor = params.get('bg');
+            if (params.has('brd')) widgetBg.style.borderColor = params.get('brd');
+            if (params.has('alg')) applyAlignment(params.get('alg'));
+
+            if (params.has('scol')) starIcon.style.fill = params.get('scol');
+            if (params.has('ssz')) {
+                starIcon.style.width = params.get('ssz');
+                starIcon.style.height = params.get('ssz');
+            }
+
+            if (params.has('bld')) {
+                isBold = params.get('bld') === 'true';
+                textOutput.style.fontWeight = isBold ? 'bold' : 'normal';
+            }
+            if (params.has('itl')) {
+                isItalic = params.get('itl') === 'true';
+                textOutput.style.fontStyle = isItalic ? 'italic' : 'normal';
+            }
+
+            textInput.value = textOutput.innerText;
+            fontSelect.value = textOutput.style.fontFamily || "'Playfair Display', serif";
+            sizeSelect.value = params.get('sz') || "auto";
+            starSizeSelect.value = starIcon.style.width || "33px";
+            colorInput.value = rgbToHex(textOutput.style.color) || "#4A3E3D";
+            starColorInput.value = rgbToHex(starIcon.style.fill) || "#FFB6C1";
+            bgColorInput.value = rgbToHex(widgetBg.style.backgroundColor) || "#FFF0F5";
+            borderColorInput.value = rgbToHex(widgetBg.style.borderColor) || "#b0b0b0";
+
+            document.getElementById('btn-bold').classList.toggle('active', isBold);
+            document.getElementById('btn-italic').classList.toggle('active', isItalic);
+            if (!isBold && !isItalic) document.getElementById('btn-normal').classList.add('active');
+
+            setActiveAlignButton(currentAlign);
+        }
+
+        function generateAndCopyLink() {
+            const baseUrl = window.location.protocol + '//' + window.location.host + window.location.pathname;
+            const params = new URLSearchParams();
+
+            params.set('txt', textInput.value);
+            params.set('fnt', fontSelect.value);
+            params.set('sz', sizeSelect.value);
+            params.set('col', colorInput.value);
+            params.set('bg', bgColorInput.value);
+            params.set('brd', borderColorInput.value);
+            params.set('bld', isBold);
+            params.set('itl', isItalic);
+            params.set('alg', currentAlign);
+
+            params.set('scol', starColorInput.value);
+            params.set('ssz', starSizeSelect.value);
+
+            const finalUrl = baseUrl + '?' + params.toString();
+            copyToClipboard(finalUrl);
+
+            okBtnText.innerText = "Copiado! 👍";
+            setTimeout(() => {
+                okBtnText.innerText = "OK";
+                panel.style.display = 'none';
+            }, 1000);
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).catch(() => legacyCopy(text));
+            } else {
+                legacyCopy(text);
+            }
+        }
+
+        function legacyCopy(text) {
+            const copyInput = document.getElementById('copy-input');
+            copyInput.value = text;
+            copyInput.select();
+            copyInput.setSelectionRange(0, 99999);
+            document.execCommand('copy');
+        }
+
+        function togglePanel(event) {
+            event.stopPropagation();
+            if (panel.style.display === 'flex') {
+                panel.style.display = 'none';
+            } else {
+                panel.style.display = 'flex';
+                textInput.focus();
+            }
+        }
+
+        function closePanel(event) {
+            if (event) event.stopPropagation();
+            generateAndCopyLink();
+        }
+
+        function updateText(val) { textOutput.innerText = val; }
+        function changeFont(val) { textOutput.style.fontFamily = val; }
+
+        function applySize(val) {
+            if (val === 'auto') {
+                textOutput.style.fontSize = '';
+                textOutput.classList.remove('fixed-size');
+            } else {
+                textOutput.style.fontSize = val;
+            }
+        }
+        function changeSize(val) { applySize(val); }
+
+        function changeColor(val) { textOutput.style.color = val; }
+        function changeBgColor(val) { widgetBg.style.backgroundColor = val; }
+        function changeBorderColor(val) { widgetBg.style.borderColor = val; }
+
+        function applyAlignment(val) {
+            currentAlign = val;
+            textOutput.classList.toggle('align-justify', val === 'justify');
+            if (val !== 'justify') {
+                textOutput.style.textAlign = val;
+            }
+        }
+        function changeAlignment(val) {
+            applyAlignment(val);
+            setActiveAlignButton(val);
+        }
+        function setActiveAlignButton(val) {
+            ['left', 'center', 'right', 'justify'].forEach(a => {
+                document.getElementById('align-' + a).classList.toggle('active', a === val);
+            });
+        }
+
+        function changeStarColor(val) { starIcon.style.fill = val; }
+        function changeStarSize(val) {
+            starIcon.style.width = val;
+            starIcon.style.height = val;
+        }
+
+        function toggleBold() {
+            isBold = !isBold;
+            textOutput.style.fontWeight = isBold ? 'bold' : 'normal';
+            document.getElementById('btn-bold').classList.toggle('active', isBold);
+            if (isBold) document.getElementById('btn-normal').classList.remove('active');
+        }
+
+        function toggleItalic() {
+            isItalic = !isItalic;
+            textOutput.style.fontStyle = isItalic ? 'italic' : 'normal';
+            document.getElementById('btn-italic').classList.toggle('active', isItalic);
+            if (isItalic) document.getElementById('btn-normal').classList.remove('active');
+        }
+
+        function setNormal() {
+            isBold = false; isItalic = false;
+            textOutput.style.fontWeight = 'normal';
+            textOutput.style.fontStyle = 'normal';
+            document.getElementById('btn-bold').classList.remove('active');
+            document.getElementById('btn-italic').classList.remove('active');
+            document.getElementById('btn-normal').classList.add('active');
+        }
+
+        function rgbToHex(rgb) {
+            if (!rgb || rgb.indexOf('rgb') === -1) return rgb;
+            const rgbValues = rgb.match(/\d+/g);
+            const r = parseInt(rgbValues[0]).toString(16).padStart(2, '0');
+            const g = parseInt(rgbValues[1]).toString(16).padStart(2, '0');
+            const b = parseInt(rgbValues[2]).toString(16).padStart(2, '0');
+            return `#${r}${g}${b}`;
+        }
+
+        document.addEventListener('click', function() {
+            if (panel.style.display === 'flex') {
+                panel.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && panel.style.display === 'flex') {
+                panel.style.display = 'none';
+            }
+            if (event.key === 'Enter' && !event.shiftKey && document.activeElement === textInput) {
+                event.preventDefault();
+                closePanel(event);
+            }
+        });
+
+        window.onload = loadUrlSettings;
+    </script>
+</body>
+</html>
